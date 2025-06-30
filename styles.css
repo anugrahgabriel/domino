@@ -1,0 +1,89 @@
+body {
+    margin: 0;
+    padding: 20px;
+    background: #000000;
+    font-family: "Courier New", monospace;
+}
+
+.outer-shell {
+    width: 1000px;
+    height: 800px;
+    background: rgba(255, 255, 255, 1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid #808080;
+    box-shadow: 2px 2px 0 #000;
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    position: absolute;
+    left: 20px;
+    top: 50px;
+    cursor: move;
+}
+
+.title-bar {
+    background: #fff;
+    color: #000;
+    padding: 2px 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.title-text {
+    flex: 1;
+}
+
+.window-controls {
+    display: flex;
+    gap: 2px;
+}
+
+.title-button {
+    background: #C0C0C0;
+    color: #000;
+    border: 1px solid #808080;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+    font-weight: bold;
+}
+
+.close-btn {
+    background: #C0C0C0;
+    color: #000;
+    border: 1px solid #808080;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+    font-weight: bold;
+    background: white;
+}
+
+.close-btn:hover {
+    background: #e0e0e0;
+}
+
+.content-area {
+    flex: 1;
+    padding: 10px;
+    overflow: auto;
+    white-space: pre-wrap;
+    color: #000;
+} 
