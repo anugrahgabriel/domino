@@ -16,6 +16,56 @@ const DominoWindow: React.FC<DominoWindowProps> = ({ onClose }) => {
   const [isVisible, setIsVisible] = useState<boolean>(true);
   const dragOffset = useRef<Position>({ x: 0, y: 0 });
   const windowRef = useRef<HTMLDivElement>(null);
+  const lastPosition = useRef<Position>({ x: 20, y: 50 });
+  const velocity = useRef<Position>({ x: 0, y: 0 });
+  const lastMoveTime = useRef<number>(0);
+
+  const getBoundaryConstraints = () => {
+    if (!windowRef.current) return { maxX: 0, maxY: 0 };
+    
+    const maxX = window.innerWidth - windowRef.current.offsetWidth;
+    const maxY = window.innerHeight - windowRef.current.offsetHeight;
+    
+    return { maxX, maxY };
+  };
+
+  const applySmoothedConstraints = (newX: number, newY: number) => {
+    const { maxX, maxY } = getBoundaryConstraints();
+    
+    // Apply smooth resistance near boundaries
+    const boundary = 50; // pixels from edge where resistance starts
+    const resistance = 0.3; // resistance factor
+    
+    let constrainedX = newX;
+    let constrainedY = newY;
+    
+    // X-axis constraints with smooth resistance
+    if (newX < 0) {
+      constrainedX = newX > -boundary ? newX * resistance : -boundary * resistance;
+    } else if (newX > maxX) {
+      const overshoot = newX - maxX;
+      constrainedX = overshoot < boundary ? maxX + (overshoot * resistance) : maxX + (boundary * resistance);
+    }
+    
+    // Y-axis constraints with smooth resistance
+    if (newY < 0) {
+      constrainedY = newY > -boundary ? newY * resistance : -boundary * resistance;
+    } else if (newY > maxY) {
+      const overshoot = newY - maxY;
+      constrainedY = overshoot < boundary ? maxY + (overshoot * resistance) : maxY + (boundary * resistance);
+    }
+    
+    return { x: constrainedX, y: constrainedY };
+  };
+
+  const snapToConstraints = (pos: Position) => {
+    const { maxX, maxY } = getBoundaryConstraints();
+    
+    return {
+      x: Math.max(0, Math.min(pos.x, maxX)),
+      y: Math.max(0, Math.min(pos.y, maxY))
+    };
+  };
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (!windowRef.current) return;
@@ -26,27 +76,44 @@ const DominoWindow: React.FC<DominoWindowProps> = ({ onClose }) => {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top
     };
+    lastMoveTime.current = Date.now();
     e.preventDefault();
   }, []);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging || !windowRef.current) return;
     
+    const now = Date.now();
+    const deltaTime = now - lastMoveTime.current;
+    
     const newX = e.clientX - dragOffset.current.x;
     const newY = e.clientY - dragOffset.current.y;
     
-    // Constrain to viewport
-    const maxX = window.innerWidth - windowRef.current.offsetWidth;
-    const maxY = window.innerHeight - windowRef.current.offsetHeight;
+    // Calculate velocity for momentum
+    if (deltaTime > 0) {
+      velocity.current = {
+        x: (newX - lastPosition.current.x) / deltaTime,
+        y: (newY - lastPosition.current.y) / deltaTime
+      };
+    }
     
-    const constrainedX = Math.max(0, Math.min(newX, maxX));
-    const constrainedY = Math.max(0, Math.min(newY, maxY));
+    const smoothedPosition = applySmoothedConstraints(newX, newY);
     
-    setPosition({ x: constrainedX, y: constrainedY });
+    setPosition(smoothedPosition);
+    lastPosition.current = smoothedPosition;
+    lastMoveTime.current = now;
   }, [isDragging]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
+    
+    // Snap back to valid constraints with smooth animation
+    setTimeout(() => {
+      setPosition(prevPos => {
+        const snappedPosition = snapToConstraints(prevPos);
+        return snappedPosition;
+      });
+    }, 50);
   }, []);
 
   // Add global mouse event listeners
@@ -72,7 +139,7 @@ const DominoWindow: React.FC<DominoWindowProps> = ({ onClose }) => {
   return (
     <div
       ref={windowRef}
-      className="outer-shell"
+      className={`outer-shell ${isDragging ? 'dragging' : 'smooth-transition'}`}
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
@@ -89,7 +156,6 @@ const DominoWindow: React.FC<DominoWindowProps> = ({ onClose }) => {
             className="close-btn"
             onClick={handleClose}
           >
-            ×
           </div>
         </div>
       </div>
