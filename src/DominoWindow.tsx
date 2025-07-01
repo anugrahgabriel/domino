@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import './DominoWindow.css';
 import { DominoScene } from './assets';
 
@@ -12,7 +12,18 @@ interface DominoWindowProps {
 }
 
 const DominoWindow: React.FC<DominoWindowProps> = ({ onClose }) => {
-  const [position, setPosition] = useState<Position>({ x: 20, y: 50 });
+  // Calculate responsive initial position and size
+  const getResponsiveSize = useCallback(() => {
+    const maxWidth = Math.min(1000, window.innerWidth - 40);
+    const maxHeight = Math.min(800, window.innerHeight - 60);
+    return { width: maxWidth, height: maxHeight };
+  }, []);
+
+  const [position, setPosition] = useState<Position>({ 
+    x: Math.max(20, (window.innerWidth - getResponsiveSize().width) / 2), 
+    y: Math.max(20, (window.innerHeight - getResponsiveSize().height) / 2) 
+  });
+  const [windowSize, setWindowSize] = useState(getResponsiveSize());
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [isVisible, setIsVisible] = useState<boolean>(true);
   const dragOffset = useRef<Position>({ x: 0, y: 0 });
@@ -20,6 +31,27 @@ const DominoWindow: React.FC<DominoWindowProps> = ({ onClose }) => {
   const lastPosition = useRef<Position>({ x: 20, y: 50 });
   const velocity = useRef<Position>({ x: 0, y: 0 });
   const lastMoveTime = useRef<number>(0);
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      const newSize = getResponsiveSize();
+      setWindowSize(newSize);
+      
+      // Adjust position if window is now off-screen
+      setPosition(prevPos => {
+        const maxX = window.innerWidth - newSize.width;
+        const maxY = window.innerHeight - newSize.height;
+        return {
+          x: Math.max(0, Math.min(prevPos.x, maxX)),
+          y: Math.max(0, Math.min(prevPos.y, maxY))
+        };
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [getResponsiveSize]);
 
   const getBoundaryConstraints = useCallback(() => {
     if (!windowRef.current) return { maxX: 0, maxY: 0 };
@@ -144,6 +176,8 @@ const DominoWindow: React.FC<DominoWindowProps> = ({ onClose }) => {
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
+        width: `${windowSize.width}px`,
+        height: `${windowSize.height}px`,
       }}
     >
       {/* Title Bar */}
@@ -157,6 +191,7 @@ const DominoWindow: React.FC<DominoWindowProps> = ({ onClose }) => {
             className="close-btn"
             onClick={handleClose}
           >
+            ×
           </div>
         </div>
       </div>

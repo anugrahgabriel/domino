@@ -2,11 +2,11 @@ Word to pattern 3d domino
 
 a draggable retro-style window component built with React TypeScript, featuring automated deployment to GitHub Pages.
 
-##Live Demo
+Live Demo
 
-**[https://anugrahgabriel.github.io/domino/](https://anugrahgabriel.github.io/domino/)**
+[https://anugrahgabriel.github.io/domino/](https://anugrahgabriel.github.io/domino/)
 
-##Features
+Features
 
 - Draggable Window** - Click and drag the title bar to move the window
 - Retro Windows Design** - Classic 90s Windows aesthetic with borders and shadows
@@ -15,7 +15,7 @@ a draggable retro-style window component built with React TypeScript, featuring 
 - Responsive Constraints** - Window stays within viewport boundaries
 - TypeScript** - Full type safety and modern development experience
 
-##Tech Stack
+Tech Stack
 
 - React 18*- Modern React with hooks
 - TypeScript - Type-safe development
@@ -25,13 +25,13 @@ a draggable retro-style window component built with React TypeScript, featuring 
 
 
 
-###Workflows:
+Workflows:
 
 - **Deploy** (`.github/workflows/deploy.yml`) - Builds and deploys on push to main
 - **CI** (`.github/workflows/ci.yml`) - Runs tests and type checking on PRs
 - **Dependabot** (`.github/dependabot.yml`) - Weekly dependency updates
 
-##Local Development
+Local Development
 
 ```bash
 # Install dependencies
@@ -50,7 +50,7 @@ npm run type-check
 npm test
 ```
 
-##Project Structure
+Project Structure
 
 ```
 domino/
@@ -71,6 +71,6 @@ domino/
 └── tsconfig.json       # TypeScript config
 ```
 
-##License
+License
 
 This project is open source and available under the MIT License.

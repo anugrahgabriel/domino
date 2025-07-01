@@ -1,6 +1,9 @@
 .outer-shell {
-  width: 1000px;
-  height: 800px;
+  /* Responsive dimensions now controlled by JavaScript */
+  min-width: 320px;
+  min-height: 240px;
+  max-width: 100vw;
+  max-height: 100vh;
   background: rgba(255, 255, 255, 1);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -17,6 +20,7 @@
   -moz-user-select: none;
   -ms-user-select: none;
   cursor: move;
+  z-index: 1000;
 }
 
 .outer-shell.smooth-transition {
@@ -38,6 +42,7 @@
   font-weight: bold;
   font-size: 13px;
   cursor: move;
+  flex-shrink: 0;
 }
 
 .title-text {
@@ -62,6 +67,7 @@
   font-weight: bold;
   background: white;
   line-height: 1;
+  font-size: 16px; /* Make X more visible */
 }
 
 .close-btn:hover {
@@ -71,7 +77,8 @@
 .content-area {
   flex: 1;
   padding: 10px;
-  overflow: auto;
+  overflow: hidden; /* Changed from auto to prevent scrollbars in 3D scene */
   white-space: pre-wrap;
   color: #000;
+  min-height: 0; /* Important for flex child to shrink */
 } 
