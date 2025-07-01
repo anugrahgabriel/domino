@@ -1,5 +1,4 @@
-import React, { useRef, useEffect } from 'react';
-import { Mesh } from 'three';
+import React, { useEffect } from 'react';
 import { useBox } from '@react-three/cannon';
 
 interface BoxProps {

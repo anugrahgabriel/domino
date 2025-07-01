@@ -1,5 +1,5 @@
-import React, { useRef, useEffect } from 'react';
-import { Mesh, Vector3 } from 'three';
+import React, { useRef, useEffect, useMemo } from 'react';
+import { Vector3 } from 'three';
 import { useFrame } from '@react-three/fiber';
 import { useSphere } from '@react-three/cannon';
 
@@ -26,7 +26,10 @@ const Ball: React.FC<BallProps> = ({
 
   // Position ball center to hit boxes at upper edge for better domino tipping (box height = 2.0, hit at 1.6)
   const ballHeight = 1.6;
-  const adjustedPosition: [number, number, number] = [position[0], ballHeight, position[2]];
+  const adjustedPosition = useMemo((): [number, number, number] => 
+    [position[0], ballHeight, position[2]], 
+    [position, ballHeight]
+  );
 
   // Physics body with settings from the image
   const [ref, api] = useSphere(() => ({
@@ -106,7 +109,7 @@ const Ball: React.FC<BallProps> = ({
     } else {
       api.mass.set(1); // Dynamic body with gravity
     }
-  }, [api, controllable]);
+  }, [api, controllable, adjustedPosition]);
 
   return (
     <mesh
