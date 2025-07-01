@@ -1,4 +1,4 @@
-name to pattern 3d domino
+Word to pattern 3d domino
 
 a draggable retro-style window component built with React TypeScript, featuring automated deployment to GitHub Pages.
 
@@ -31,7 +31,7 @@ a draggable retro-style window component built with React TypeScript, featuring 
 - **CI** (`.github/workflows/ci.yml`) - Runs tests and type checking on PRs
 - **Dependabot** (`.github/dependabot.yml`) - Weekly dependency updates
 
-## 💻 Local Development
+##Local Development
 
 ```bash
 # Install dependencies
@@ -50,7 +50,7 @@ npm run type-check
 npm test
 ```
 
-## 📁 Project Structure
+##Project Structure
 
 ```
 domino/

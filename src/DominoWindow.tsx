@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import './DominoWindow.css';
+import { DominoScene } from './assets';
 
 interface Position {
   x: number;
@@ -20,21 +21,21 @@ const DominoWindow: React.FC<DominoWindowProps> = ({ onClose }) => {
   const velocity = useRef<Position>({ x: 0, y: 0 });
   const lastMoveTime = useRef<number>(0);
 
-  const getBoundaryConstraints = () => {
+  const getBoundaryConstraints = useCallback(() => {
     if (!windowRef.current) return { maxX: 0, maxY: 0 };
     
     const maxX = window.innerWidth - windowRef.current.offsetWidth;
     const maxY = window.innerHeight - windowRef.current.offsetHeight;
     
     return { maxX, maxY };
-  };
+  }, []);
 
-  const applySmoothedConstraints = (newX: number, newY: number) => {
+  const applySmoothedConstraints = useCallback((newX: number, newY: number) => {
     const { maxX, maxY } = getBoundaryConstraints();
     
     // Apply smooth resistance near boundaries
-    const boundary = 50; // pixels from edge where resistance starts
-    const resistance = 0.3; // resistance factor
+    const boundary = 80; // pixels from edge where resistance starts
+    const resistance = 0.15; // resistance factor (reduced for smoother feel)
     
     let constrainedX = newX;
     let constrainedY = newY;
@@ -56,16 +57,16 @@ const DominoWindow: React.FC<DominoWindowProps> = ({ onClose }) => {
     }
     
     return { x: constrainedX, y: constrainedY };
-  };
+  }, [getBoundaryConstraints]);
 
-  const snapToConstraints = (pos: Position) => {
+  const snapToConstraints = useCallback((pos: Position) => {
     const { maxX, maxY } = getBoundaryConstraints();
     
     return {
       x: Math.max(0, Math.min(pos.x, maxX)),
       y: Math.max(0, Math.min(pos.y, maxY))
     };
-  };
+  }, [getBoundaryConstraints]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (!windowRef.current) return;
@@ -102,7 +103,7 @@ const DominoWindow: React.FC<DominoWindowProps> = ({ onClose }) => {
     setPosition(smoothedPosition);
     lastPosition.current = smoothedPosition;
     lastMoveTime.current = now;
-  }, [isDragging]);
+  }, [isDragging, applySmoothedConstraints]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
@@ -114,7 +115,7 @@ const DominoWindow: React.FC<DominoWindowProps> = ({ onClose }) => {
         return snappedPosition;
       });
     }, 50);
-  }, []);
+  }, [snapToConstraints]);
 
   // Add global mouse event listeners
   React.useEffect(() => {
@@ -162,7 +163,7 @@ const DominoWindow: React.FC<DominoWindowProps> = ({ onClose }) => {
       
       {/* Content */}
       <div className="content-area">
-        {/* You can add Domino-related UI here */}
+        <DominoScene width="100%" height="100%" />
       </div>
     </div>
   );
