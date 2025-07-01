@@ -1,26 +1,27 @@
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, OrthographicCamera } from '@react-three/drei';
-import { Physics, usePlane } from '@react-three/cannon';
+import { Physics, useBox } from '@react-three/cannon';
 import Lighting from './Lighting';
 import Ball from './Ball';
 import Box from './Box';
 
-// Stable Physics Ground component
+// Thick Physics Ground component
 const Ground = () => {
-  const [ref] = usePlane(() => ({
-    rotation: [-Math.PI / 2, 0, 0],
-    position: [0, 0, 0],
+  const [ref] = useBox(() => ({
+    position: [0, -1, 0], // Position so top surface is at y=0
+    args: [40, 2, 40], // width, height (thickness), depth
     material: {
       friction: 0.6,
       restitution: 0.1,
-    }
+    },
+    type: 'Static' // Ground doesn't move
   }));
 
   return (
-    <mesh ref={ref as any} receiveShadow>
-      <planeGeometry args={[40, 40]} />
-      <meshStandardMaterial color="#e0e0e0" />
+    <mesh ref={ref as any} receiveShadow castShadow>
+      <boxGeometry args={[40, 2, 40]} />
+      <meshStandardMaterial color="#d0d0d0" />
     </mesh>
   );
 };
