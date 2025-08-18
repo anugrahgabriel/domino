@@ -5,7 +5,7 @@
   "homepage": "https://anugrahgabriel.github.io/domino",
   "dependencies": {
     "@react-three/cannon": "^6.6.0",
-    "@react-three/drei": "^9.65.0",
+    "@react-three/drei": "^10.7.3",
     "@react-three/fiber": "^8.13.0",
     "@types/node": "^16.18.0",
     "@types/react": "^18.2.0",
